@@ -10,8 +10,10 @@ from gdo.chatgpt.GDO_ChatGenome import GDO_ChatGenome
 from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
 from gdo.chatgpt.TrainingThread import TrainingThread
 from gdo.chatgpt.method.ChappyEventListener import ChappyEventListener
+from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.connector.Bash import Bash
+from gdo.irc.method.CMD_PRIVMSG import CMD_PRIVMSG
 from gdotest.TestUtil import web_plug, reinstall_module, cli_plug, cli_gizmore, install_module
 
 
@@ -23,6 +25,7 @@ class ChatTest(unittest.TestCase):
         loader.load_modules_db(True)
         reinstall_module('blackjack')
         reinstall_module('chatgpt')
+        reinstall_module('irc')
         loader.init_modules(True, True)
         loader.init_cli()
         return self
@@ -75,6 +78,18 @@ class ChatTest(unittest.TestCase):
             count = GDO_ChatMessage.table().count_where()
         self.assertGreaterEqual(count, 5, 'Chappy does not play blackjack long enough.')
 
+    def test_04_irc(self):
+        try:
+            cli_plug(None, '$add_server giz IRC tcp://irc.giz.org:6667')
+        except:
+            pass
+        server = GDO_Server.table().get_by_vals({
+            'serv_name': 'giz',
+        })
+        self.assertIsNotNone(server, 'test irc server missing')
+        server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :$chappy --model blackjack on')
+        server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :Chappy: Please play a round of blackjack.')
+        self.assertTrue(True, 'blah')
 
 
     # def test_03_fine_tuning(self):

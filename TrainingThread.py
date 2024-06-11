@@ -34,7 +34,7 @@ class TrainingThread(threading.Thread):
         Application.init_thread(self)
         while Application.RUNNING:
             self.running()
-        del self.INSTANCES[self._genome]
+        # del self.INSTANCES[self._genome]
 
     def running(self):
         if self.has_work_todo():
@@ -55,12 +55,12 @@ class TrainingThread(threading.Thread):
 
     def chatgpt_request(self):
         from gdo.chatgpt.module_chatgpt import module_chatgpt
-        server = self._genome.get_user().get_server()
+        server = self._genome.get_server()
         prompt = GDO_ChatMessage.next_prompt(self._genome)
         msgs = prompt.prompt_messages()  # GDO Messages
         messages = GDO_ChatMessage.get_messages(self._genome, msgs)  # json messages
         message = (Message(None, server.get_connector().get_render_mode()).
-                   env_user(self._genome.get_user()).env_channel(self._genome.get_channel()).env_server(server))
+                   env_user(prompt.get_user()).env_channel(self._genome.get_channel()).env_server(server))
         mod = module_chatgpt.instance()
         api = mod.get_openai()
         response = api.chat.completions.create(
@@ -86,7 +86,7 @@ class TrainingThread(threading.Thread):
             return prompt.chappy_acknowledged(message)
 
         message._result = result
-        if message._sender.get_server().get_trigger() in result:
+        if message._env_user.get_server().get_trigger() in result:
             self.execute_chappy_response(message, prompt)
 
     def get_temperature(self, message: Message):

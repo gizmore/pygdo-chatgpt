@@ -3,6 +3,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Message import Message
 from gdo.chatgpt.GDT_ChatModel import GDT_ChatModel
 from gdo.core.GDO_Channel import GDO_Channel
+from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Channel import GDT_Channel
@@ -30,6 +31,13 @@ class GDO_ChatGenome(GDO):
 
     def get_channel(self) -> GDO_Channel:
         return self.gdo_value('cg_channel')
+
+    def get_server(self) -> GDO_Server:
+        channel = self.get_channel()
+        if channel:
+            return channel.get_server()
+        user = self.get_user()
+        return user.get_server()
 
     def get_base_model(self) -> GDT_ChatModel:
         return self.column('cg_base_model')

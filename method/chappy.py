@@ -20,14 +20,16 @@ class chappy(Method):
         return self.param_val('state')
 
     def gdo_execute(self):
+        hasattr(self, f"{self.get_subcommand()}")
         match self.get_subcommand():
             case 'on':
                 if self._env_channel:
                     genome = GDO_ChatGenome.get_or_create_for_channel(self._env_channel, self.parameter('model'))
                 else:
                     genome = GDO_ChatGenome.get_or_create_for_user(self._env_user, self.parameter('model'))
-                    return self.msg('msg_chappy_enabled', [self.param_val('model')])
+                return self.msg('msg_chappy_enabled', [self.param_val('model')])
             case 'off':
+                genome = GDO_ChatGenome.get_for_channel(self._env_channel)
                 pass
         return self
 

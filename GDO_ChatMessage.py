@@ -134,10 +134,10 @@ class GDO_ChatMessage(GDO):
         for msg in self.prompt_messages():
             msg._acknowledge(self, message)
         self.blank({
-            'gcm_genome': self.get_genome(),
+            'gcm_genome': self.get_genome().get_id(),
             'gcm_prompt_message': self.get_id(),
             'gcm_user': self.get_chappy().get_id(),
-            'gcm_text': message._message,
+            'gcm_text': message._result,
             'gcm_response': '1',
             'gcm_state': 'acknowledged',
         }).insert()
