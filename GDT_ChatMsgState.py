@@ -9,9 +9,9 @@ class GDT_ChatMsgState(GDT_Enum):
     def gdo_choices(self) -> dict:
         return {
             'created': 'Created',
-            'acknowledged': 'Self-Acknowledged',
-            'acked': 'User-Acknowledged',
-            'outdated': 'Outdated',
+            # 'acknowledged': 'Self-Acknowledged',
+            # 'acked': 'User-Acknowledged',
+            # 'outdated': 'Outdated',
             'answered': 'Answered',
             'nope': 'Dismissed',
             'training': 'Training',

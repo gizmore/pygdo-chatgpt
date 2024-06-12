@@ -20,9 +20,9 @@ class GDO_ChatMessage(GDO):
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('gcm_id'),
-            GDT_Object('gcm_genome').table(GDO_ChatGenome.table()).not_null(),
-            GDT_Object('gcm_prompt_message').table(self.table()),
-            GDT_User('gcm_user'),  # 1=system, 2=Chappy (in a normal setup)
+            GDT_Object('gcm_genome').table(GDO_ChatGenome.table()).not_null().cascade_delete(),
+            GDT_Object('gcm_prompt_message').table(self.table()).cascade_delete(),
+            GDT_User('gcm_user').cascade_delete(),  # 1=system, 2=Chappy (in a normal setup)
             GDT_Text('gcm_text').not_null(),
             GDT_Bool('gcm_prompt').not_null().initial('0'),
             GDT_Bool('gcm_response').not_null().initial('0'),
@@ -149,6 +149,13 @@ class GDO_ChatMessage(GDO):
                 'gcm_state': 'acknowledged',
             })
 
+    #######
+    # Off #
+    #######
+    @classmethod
+    def reset(cls, self):
+        return cls.table().update("gcm_state='answered'").where("gcm_state IN ('created')").exec()
+
     ########
     # Nope #
     ########
@@ -161,3 +168,9 @@ class GDO_ChatMessage(GDO):
     @classmethod
     def can_evolve(cls, genome: GDO_ChatGenome):
         return cls.table().count_where(f"gcm_genome={genome.get_id()} AND gcm_prompt=1 AND gcm_state='created'") >= 10
+
+    @classmethod
+    def learned_prompts(cls):
+        cls.table().select().where("gcm_state IN ('answered')")
+        pass
+

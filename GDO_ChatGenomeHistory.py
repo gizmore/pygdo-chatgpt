@@ -14,7 +14,7 @@ class GDO_ChatGenomeHistory(GDO):
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('cgh_id'),
-            GDT_Object('cgh_genome').table(GDO_ChatGenome.table()).not_null(),
+            GDT_Object('cgh_genome').table(GDO_ChatGenome.table()).not_null().cascade_delete(),
             GDT_String('cgh_name'),
             GDT_DateTime('cgh_processed'),
             GDT_Created('cgh_created'),
@@ -22,7 +22,10 @@ class GDO_ChatGenomeHistory(GDO):
 
     @classmethod
     def init_evolve(cls, genome: GDO_ChatGenome):
-        cls.blank({
+        return cls.table().get_by_vals({
+            'cgh_genome': genome.get_id(),
+            'cgh_name': None,
+        }) or cls.blank({
             'cgh_genome': genome.get_id(),
         }).insert()
 
@@ -37,5 +40,3 @@ class GDO_ChatGenomeHistory(GDO):
             'cgh_processed': Time.get_date(),
         })
         genome.evolve(model_name)
-        pass
-

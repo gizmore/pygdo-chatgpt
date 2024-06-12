@@ -29,7 +29,14 @@ class chappy(Method):
                     genome = GDO_ChatGenome.get_or_create_for_user(self._env_user, self.parameter('model'))
                 return self.msg('msg_chappy_enabled', [self.param_val('model')])
             case 'off':
-                genome = GDO_ChatGenome.get_for_channel(self._env_channel)
+                if self._env_channel:
+                    genome = GDO_ChatGenome.get_for_channel(self._env_channel, self.parameter('model'))
+                else:
+                    genome = GDO_ChatGenome.get_for_user(self._env_user, self.parameter('model'))
+                if not genome:
+                    return self.err('err_chappy_not_enabled')
+                genome.delete()
+                return self.msg('msg_chappy_disabled')
 
         return self
 

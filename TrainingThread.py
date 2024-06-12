@@ -1,12 +1,14 @@
 import asyncio
+import json
 import threading
 import time
 
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
 from gdo.base.Message import Message
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, Files
 from gdo.chatgpt.GDO_ChatGenome import GDO_ChatGenome
+from gdo.chatgpt.GDO_ChatGenomeHistory import GDO_ChatGenomeHistory
 from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Page import GDT_Page
@@ -85,7 +87,7 @@ class TrainingThread(threading.Thread):
         message._sender = mod.cfg_chappy()
         asyncio.run(message.deliver())
 
-        if result.startswith('$ack'):
+        if '$ack' in result:
             return prompt.chappy_acknowledged(message)
 
         message._result = result
@@ -140,13 +142,15 @@ class TrainingThread(threading.Thread):
         return module_chatgpt.instance().cfg_chappy()
 
     def evolve(self):
+        from gdo.chatgpt.module_chatgpt import module_chatgpt
         GDO_ChatGenomeHistory.init_evolve(self._genome)
         path = Application.file_path(f'files/chatgpt/{self._genome.get_id()}.json')
+        prompts = GDO_ChatMessage.learned_prompts()
         messages = GDO_ChatMessage.get_messages(self._genome, False, True)
         messages = {
             "messages": messages,
         }
-        Files.put_contents(path, json.dumps(messages))
+        Files.append_content(path, json.dumps(messages))
         client = module_chatgpt.instance().get_openai()
         response = client.files.create(
             file=open(path, "rb"),

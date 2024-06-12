@@ -70,27 +70,27 @@ class GDO_ChatGenome(GDO):
 
     @classmethod
     def create_for_channel(cls, channel: GDO_Channel, model: GDT_ChatModel):
-        genome = cls.blank({
+        return cls.blank({
             'cg_channel': channel.get_id(),
             'cg_base_model': model.get_val(),
             'cg_model_name': model.base_model(),
         }).insert()
-        return genome
 
     @classmethod
     def create_for_user(cls, user: GDO_User, model: GDT_ChatModel):
-        genome = cls.blank({
+        return cls.blank({
             'cg_user': user.get_id(),
             'cg_base_model': model.get_val(),
             'cg_model_name': model.base_model(),
         }).insert()
-        return genome
 
     @classmethod
     def get_or_create_for_channel(cls, channel: GDO_Channel, model: GDT_ChatModel):
         genome = cls.get_for_channel(channel)
         if not genome:
             genome = cls.create_for_channel(channel, model)
+        else:
+            genome.save_val('cg_base_model', model.get_val())
         return genome
 
     @classmethod
@@ -98,7 +98,13 @@ class GDO_ChatGenome(GDO):
         genome = cls.get_for_user(user)
         if not genome:
             genome = cls.create_for_user(user, model)
+        else:
+            genome.save_val('cg_base_model', model.get_val())
         return genome
+
+    def reset(self):
+        from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
+        GDO_ChatMessage.reset(self)
 
     def evolve(self, model_name: str):
         self.save_val('cg_model_name', model_name)

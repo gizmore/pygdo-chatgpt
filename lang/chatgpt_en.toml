@@ -6,3 +6,5 @@ err_agi_not_enabled = "ChatGPT is not enabled here."
 # chappy #
 ##########
 msg_chappy_enabled = "ChatGPT engine enabled with model %s."
+msg_chappy_disabled = "ChatGPT engine disabled."
+err_chappy_not_enabled = 'ChatGPT is not enabled here.'
