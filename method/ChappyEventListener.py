@@ -40,7 +40,7 @@ class ChappyEventListener(Method):
         GDO_ChatMessage.blank({
             'gcm_genome': genome.get_id(),
             'gcm_user': message._sender.get_id() if message._sender else message._env_user.get_id(),
-            'gcm_text': message._message,
+            'gcm_text': self.get_db_text2(message),
             'gcm_prompt': '1' if triggered else '0',
         }).insert()
 
@@ -66,3 +66,9 @@ class ChappyEventListener(Method):
         if message._env_reply_to == 'Chappy' or message._sender == GDO_ChatMessage.get_chappy():
             return Strings.rsubstr_to(message._result, ' #', message._result)
         return message._result
+
+    def get_db_text2(self, message: Message) -> str:
+        from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
+        if message._env_reply_to == 'Chappy' or message._sender == GDO_ChatMessage.get_chappy():
+            return Strings.rsubstr_to(message._message, ' #', message._message)
+        return message._message

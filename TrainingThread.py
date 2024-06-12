@@ -43,7 +43,10 @@ class TrainingThread(threading.Thread):
             except Exception as ex:
                 Logger.exception(ex)
         elif self.can_evolve():
-            pass
+            try:
+                self.evolve()
+            except Exception as ex:
+                Logger.exception(ex)
         else:
             time.sleep(1)
 
@@ -51,7 +54,7 @@ class TrainingThread(threading.Thread):
         return GDO_ChatMessage.has_work_todo(self._genome)
 
     def can_evolve(self) -> bool:
-        return False
+        return GDO_ChatMessage.can_evolve(self._genome)
 
     def chatgpt_request(self):
         from gdo.chatgpt.module_chatgpt import module_chatgpt
@@ -104,19 +107,22 @@ class TrainingThread(threading.Thread):
         return module_chatgpt.instance().cfg_temperature(message._env_user)
 
     def execute_chappy_response(self, message: Message, prompt: GDO_ChatMessage):
+        from gdo.core.GDO_Session import GDO_Session
         Application.fresh_page()
-        message._text = message._result
+        message._message = message._result
+        message.env_user(self.get_chappy())
         message._sender = GDO_User.system()
         message._env_session = GDO_Session.for_user(self.get_chappy())
         message._env_reply_to = 'Chappy'
         parser = self.get_chappy_parser(message)
-        command = Strings.substr_from(message._text, message._sender.get_server().get_trigger())
+        command = Strings.substr_from(message._message, message._sender.get_server().get_trigger())
         method = parser.parse(command)
         gdt = method.execute()
         txt = GDT_Page.instance()._top_bar.render_txt()
         txt += " "
         txt += gdt.render_txt()
         message._result = txt.strip()
+        message.env_user(prompt.get_user())
         asyncio.run(message.deliver())
 
     def get_chappy_parser(self, message: Message):
@@ -133,36 +139,35 @@ class TrainingThread(threading.Thread):
         from gdo.chatgpt.module_chatgpt import module_chatgpt
         return module_chatgpt.instance().cfg_chappy()
 
-
-    # def evolve(self):
-    #     GDO_ChatGenomeHistory.init_evolve(self._genome)
-    #     path = Application.file_path(f'files/chatgpt/{self._genome.get_id()}.json')
-    #     messages = GDO_ChatMessage.get_messages(self._genome, False, True)
-    #     messages = {
-    #         "messages": messages,
-    #     }
-    #     Files.put_contents(path, json.dumps(messages))
-    #     client = module_chatgpt.instance().get_openai()
-    #     response = client.files.create(
-    #         file=open(path, "rb"),
-    #         purpose="fine-tune"
-    #     )
-    #     fileid = response.id
-    #     response = client.fine_tuning.jobs.create(
-    #         training_file=fileid,
-    #         model=self._genome.get_model_name(),
-    #     )
-    #     jobid = response.id
-    #     time.sleep(2)
-    #     while True:
-    #         job_status = client.fine_tuning.jobs.retrieve(jobid)
-    #         if job_status.status == 'succeeded':
-    #             model_name = job_status.fine_tuned_model
-    #             GDO_ChatGenomeHistory.evolve(self._genome, model_name)
-    #             GDO_ChatMessage.mark_processed(self._genome)
-    #             break
-    #         elif job_status.status == 'failed':
-    #             Logger.error("Fine-tuning job failed.")
-    #             break
-    #         else:
-    #             time.sleep(10)
+    def evolve(self):
+        GDO_ChatGenomeHistory.init_evolve(self._genome)
+        path = Application.file_path(f'files/chatgpt/{self._genome.get_id()}.json')
+        messages = GDO_ChatMessage.get_messages(self._genome, False, True)
+        messages = {
+            "messages": messages,
+        }
+        Files.put_contents(path, json.dumps(messages))
+        client = module_chatgpt.instance().get_openai()
+        response = client.files.create(
+            file=open(path, "rb"),
+            purpose="fine-tune"
+        )
+        fileid = response.id
+        response = client.fine_tuning.jobs.create(
+            training_file=fileid,
+            model=self._genome.get_model_name(),
+        )
+        jobid = response.id
+        time.sleep(2)
+        while True:
+            job_status = client.fine_tuning.jobs.retrieve(jobid)
+            if job_status.status == 'succeeded':
+                model_name = job_status.fine_tuned_model
+                GDO_ChatGenomeHistory.evolve(self._genome, model_name)
+                GDO_ChatMessage.mark_processed(self._genome)
+                break
+            elif job_status.status == 'failed':
+                Logger.error("Fine-tuning job failed.")
+                break
+            else:
+                time.sleep(10)

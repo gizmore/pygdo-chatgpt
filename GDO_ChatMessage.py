@@ -154,3 +154,10 @@ class GDO_ChatMessage(GDO):
     ########
     def nope_it(self):
         pass
+
+    ##########
+    # Evolve #
+    ##########
+    @classmethod
+    def can_evolve(cls, genome: GDO_ChatGenome):
+        return cls.table().count_where(f"gcm_genome={genome.get_id()} AND gcm_prompt=1 AND gcm_state='created'") >= 10

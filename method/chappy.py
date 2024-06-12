@@ -30,7 +30,7 @@ class chappy(Method):
                 return self.msg('msg_chappy_enabled', [self.param_val('model')])
             case 'off':
                 genome = GDO_ChatGenome.get_for_channel(self._env_channel)
-                pass
+
         return self
 
     def render_irc(self) -> str:
