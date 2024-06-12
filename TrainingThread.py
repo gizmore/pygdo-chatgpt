@@ -43,6 +43,7 @@ class TrainingThread(threading.Thread):
             try:
                 self.chatgpt_request()
             except Exception as ex:
+                # self._genome.get_user().send('%s', [str(ex)])
                 Logger.exception(ex)
         elif self.can_evolve():
             try:
@@ -81,11 +82,13 @@ class TrainingThread(threading.Thread):
         # generated_texts = [
         #     choice.message["content"].strip() for choice in response["choices"]
         # ]
-        GDO_ChatMessage.change_state(prompt, msgs, 'answered')
+        # GDO_ChatMessage.change_state(prompt, msgs, 'answered')
         result = response.choices[0].message.content
         message._result = f"{result} #{prompt.get_id()}"
         message._sender = mod.cfg_chappy()
+        # print(message._sender)
         asyncio.run(message.deliver())
+        GDO_ChatMessage.change_state(prompt, msgs, 'answered')
 
         if '$ack' in result:
             return prompt.chappy_acknowledged(message)
