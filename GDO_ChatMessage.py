@@ -133,14 +133,14 @@ class GDO_ChatMessage(GDO):
     def chappy_acknowledged(self, message: Message):
         for msg in self.prompt_messages():
             msg._acknowledge(self, message)
-        self.blank({
-            'gcm_genome': self.get_genome().get_id(),
-            'gcm_prompt_message': self.get_id(),
-            'gcm_user': self.get_chappy().get_id(),
-            'gcm_text': message._result,
-            'gcm_response': '1',
-            'gcm_state': 'acknowledged',
-        }).insert()
+        # self.blank({
+        #     'gcm_genome': self.get_genome().get_id(),
+        #     'gcm_prompt_message': self.get_id(),
+        #     'gcm_user': self.get_chappy().get_id(),
+        #     'gcm_text': message._result,
+        #     'gcm_response': '1',
+        #     'gcm_state': 'acknowledged',
+        # }).insert()
 
     def _acknowledge(self, prompt: 'GDO_ChatMessage', message: Message):
         if prompt and not self.gdo_val('gcm_prompt_message'):
