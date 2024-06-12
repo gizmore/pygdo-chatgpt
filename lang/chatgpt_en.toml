@@ -5,6 +5,8 @@ err_agi_not_enabled = "ChatGPT is not enabled here."
 ##########
 # chappy #
 ##########
+mt_chatgpt_chappy = "Manage ChatGPT settings"
+md_chatgpt_chappy = "Manage ChatGPT settings for a context scope in private or in channels."
 msg_chappy_enabled = "ChatGPT engine enabled with model %s."
 msg_chappy_disabled = "ChatGPT engine disabled."
 err_chappy_not_enabled = 'ChatGPT is not enabled here.'
