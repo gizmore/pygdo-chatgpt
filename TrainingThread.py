@@ -47,7 +47,7 @@ class TrainingThread(threading.Thread):
                 Logger.exception(ex)
         elif self.can_evolve():
             try:
-                self.evolve()
+                pass  # self.evolve()
             except Exception as ex:
                 Logger.exception(ex)
         else:

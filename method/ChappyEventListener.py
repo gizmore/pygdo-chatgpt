@@ -63,9 +63,10 @@ class ChappyEventListener(Method):
 
     def get_db_text(self, message: Message) -> str:
         from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
+        res = message._result_raw
         if message._env_reply_to == 'Chappy' or message._sender == GDO_ChatMessage.get_chappy():
-            return Strings.rsubstr_to(message._result, ' #', message._result)
-        return message._result
+            return Strings.rsubstr_to(res, ' #', res)
+        return res
 
     def get_db_text2(self, message: Message) -> str:
         from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
