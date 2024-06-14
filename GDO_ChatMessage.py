@@ -106,7 +106,7 @@ class GDO_ChatMessage(GDO):
     def get_role(self) -> str:
         from gdo.chatgpt.module_chatgpt import module_chatgpt
         user = self.get_user()
-        if user.get_id() == module_chatgpt.instance().cfg_chappy_id():
+        if user == module_chatgpt.instance().cfg_chappy():
             return 'assistant'
         return 'user'
 

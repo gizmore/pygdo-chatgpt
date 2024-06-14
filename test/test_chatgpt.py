@@ -31,7 +31,7 @@ class ChatTest(unittest.TestCase):
         return self
 
     def test_01_chappy_user(self):
-        id = module_chatgpt.instance().cfg_chappy_id()
+        id = module_chatgpt.instance().cfg_chappy().get_id()
         self.assertIsNotNone(id, 'Cannot get chappy id.')
         user = module_chatgpt.instance().cfg_chappy()
         self.assertIsInstance(user, GDO_User, 'Cannot get chappy user.')

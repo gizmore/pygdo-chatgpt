@@ -15,6 +15,7 @@ from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
 from gdo.chatgpt.GDT_ChatTemperature import GDT_ChatTemperature
 from gdo.chatgpt.method.ChappyEventListener import ChappyEventListener
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_User import GDT_User
 from gdo.core.connector.Bash import Bash
@@ -59,6 +60,7 @@ class module_chatgpt(GDO_Module):
     def gdo_user_settings(self) -> list[GDT]:
         return [
             GDT_ChatTemperature('chappy_temperature'),
+            GDT_Bool('chappy_no'),
         ]
 
     def cfg_temperature(self, user: GDO_User):
@@ -88,19 +90,21 @@ class module_chatgpt(GDO_Module):
     ##########
 
     def on_new_message(self, message: Message):
-        genome = GDO_ChatGenome.for_message(message)
-        if genome:
-            ChappyEventListener().env_copy(message).on_new_message(genome, message)
+        if not message._env_user.get_setting_value('chappy_no'):
+            genome = GDO_ChatGenome.for_message(message)
+            if genome:
+                ChappyEventListener().env_copy(message).on_new_message(genome, message)
 
     def on_message_sent(self, message: Message):
-        genome = GDO_ChatGenome.for_message(message)
-        if genome:
-            if message._result.startswith('Chappy:'):
-                message._message = message._result
-                ChappyEventListener().env_copy(message).on_new_message(genome, message)
-            else:
-                chappy = self.cfg_chappy()
-                ChappyEventListener().env_copy(message).on_message_sent(genome, message, chappy)
+        if not message._env_user.get_setting_value('chappy_no'):
+            genome = GDO_ChatGenome.for_message(message)
+            if genome:
+                if message._result.startswith('Chappy:'):
+                    message._message = message._result
+                    ChappyEventListener().env_copy(message).on_new_message(genome, message)
+                else:
+                    chappy = self.cfg_chappy()
+                    ChappyEventListener().env_copy(message).on_message_sent(genome, message, chappy)
 
     #######
     # API #
