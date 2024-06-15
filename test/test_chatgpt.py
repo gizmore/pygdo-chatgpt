@@ -10,6 +10,7 @@ from gdo.chatgpt.GDO_ChatGenome import GDO_ChatGenome
 from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
 from gdo.chatgpt.TrainingThread import TrainingThread
 from gdo.chatgpt.method.ChappyEventListener import ChappyEventListener
+from gdo.core.GDO_Channel import GDO_Channel
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.connector.Bash import Bash
@@ -23,12 +24,21 @@ class ChatTest(unittest.TestCase):
         Application.init(os.path.dirname(__file__ + "/../../../../"))
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
-        reinstall_module('blackjack')
-        reinstall_module('chatgpt')
-        reinstall_module('irc')
+        install_module('blackjack')
+        install_module('chatgpt')
+        install_module('irc')
         loader.init_modules(True, True)
         loader.init_cli()
         return self
+
+    def test_00_reinstall_chappy(self):
+        reinstall_module('blackjack')
+        reinstall_module('chatgpt')
+        reinstall_module('irc')
+        loader = ModuleLoader.instance()
+        loader.load_modules_db(True)
+        loader.init_modules(True, True)
+        loader.init_cli()
 
     def test_01_chappy_user(self):
         id = module_chatgpt.instance().cfg_chappy().get_id()
@@ -90,6 +100,20 @@ class ChatTest(unittest.TestCase):
         server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :$chappy --model blackjack on')
         server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :Chappy: Please play a round of blackjack.')
         self.assertTrue(True, 'blah')
+
+    def test_05_irc_mass(self):
+        genome = GDO_ChatGenome.get_for_channel(GDO_Channel.table().get_by_id('1'))
+        prompts = [
+            'Chappy: This is test message 1/10... and i don\'t really read the response.',
+        ]
+        for prompt in prompts:
+
+
+    def test_06_evolve(self):
+        genome = GDO_ChatGenome.get_for_channel(GDO_Channel.table().get_by_id('1'))
+        tt = TrainingThread(genome)
+        if tt.can_evolve():
+            tt.evolve()
 
 
     # def test_03_fine_tuning(self):

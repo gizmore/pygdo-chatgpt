@@ -47,7 +47,7 @@ class TrainingThread(threading.Thread):
                 Logger.exception(ex)
         elif self.can_evolve():
             try:
-                pass  # self.evolve()
+                self.evolve()
             except Exception as ex:
                 Logger.exception(ex)
         else:
@@ -86,16 +86,14 @@ class TrainingThread(threading.Thread):
         result = response.choices[0].message.content
         message._result = f"{result} #{prompt.get_id()}"
         message._sender = self._genome.get_chappy()
-        # print(message._sender)
         asyncio.run(message.deliver())
         GDO_ChatMessage.change_state(prompt, msgs, 'answered')
-
         if '$ack' in result:
-            return prompt.chappy_acknowledged(message)
-
-        message._result = result
-        if message._env_user.get_server().get_trigger() in result:
-            self.execute_chappy_response(message, prompt)
+            prompt.chappy_acknowledged(message)
+        else:
+            message._result = result
+            if message._env_user.get_server().get_trigger() in result:
+                self.execute_chappy_response(message, prompt)
 
     def get_temperature(self, message: Message):
         if message._env_channel:

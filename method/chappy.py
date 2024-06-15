@@ -2,6 +2,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.chatgpt.GDO_ChatGenome import GDO_ChatGenome
 from gdo.chatgpt.GDT_ChatModel import GDT_ChatModel
+from gdo.chatgpt.TrainingThread import TrainingThread
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_User import GDT_User
 
@@ -19,7 +20,7 @@ class chappy(Method):
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_ChatModel('model').initial('agi').not_null(),
-            GDT_Enum('state').choices({'on': 'On', 'off': 'Off'}).not_null(),
+            GDT_Enum('state').choices({'on': 'On', 'off': 'Off', 'reset': 'Reset', 'evolve': 'Evolve'}).not_null(),
         ]
 
     def get_subcommand(self) -> str:
@@ -46,6 +47,13 @@ class chappy(Method):
                     return self.err('err_chappy_not_enabled')
                 genome.delete()
                 return self.msg('msg_chappy_disabled')
+            case 'evolve':
+                if self._env_channel:
+                    genome = GDO_ChatGenome.get_or_create_for_channel(self._env_channel)
+                else:
+                    genome = GDO_ChatGenome.get_or_create_for_user(self._env_user)
+                TrainingThread.instance(genome)
+                return self.msg('msg_chappy_evolving')
 
         return self
 

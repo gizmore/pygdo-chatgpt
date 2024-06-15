@@ -68,37 +68,37 @@ class module_chatgpt(GDO_Module):
 
     def get_or_create_user_chappy(self, user: GDO_User) -> GDO_User:
         bash_id = Bash.get_server().get_id()
-        user = GDO_User.table().get_by_vals({
+        chappy = GDO_User.table().get_by_vals({
             'user_type': 'device',
             'user_link': user.get_id(),
             'user_server': bash_id,
         })
-        if not user:
-            name = f"UserChappy{user.get_id}"
-            user = GDO_User.blank({
+        if not chappy:
+            name = f"UserChappy{user.get_id()}"
+            chappy = GDO_User.blank({
                 'user_type': 'device',
                 'user_name': name,
                 'user_displayname': 'Chappy',
                 'user_server': bash_id,
                 'user_link': user.get_id(),
             }).insert()
-        return user
+        return chappy
 
     def get_or_create_channel_chappy(self, channel: GDO_Channel) -> GDO_User:
         name = f"Chappy{channel.get_id()}"
         bash_id = Bash.get_server().get_id()
-        user = GDO_User.table().get_by_vals({
+        chappy = GDO_User.table().get_by_vals({
             'user_name': name,
             'user_server': bash_id,
         })
-        if not user:
-            user = GDO_User.blank({
+        if not chappy:
+            chappy = GDO_User.blank({
                 'user_type': 'member',
                 'user_name': name,
                 'user_displayname': 'Chappy',
                 'user_server': bash_id,
             }).insert()
-        return user
+        return chappy
 
     def cfg_chappy_id(self) -> str:
         return self.get_config_val('chatgpt_chappy')

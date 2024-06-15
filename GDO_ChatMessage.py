@@ -65,6 +65,11 @@ class GDO_ChatMessage(GDO):
         return (cls.table().select().where(f"gcm_genome={genome.get_id()} AND gcm_prompt=1 AND gcm_state='created'").
                 order('gcm_created ASC').first().exec().fetch_object())
 
+    @classmethod
+    def current_prompt(cls, genome):
+        return (cls.table().select().where(f"gcm_genome={genome.get_id()} AND gcm_prompt=1 AND gcm_state='created'").
+                order('gcm_created DESC').first().exec().fetch_object())
+
     def prompt_messages(self, max_messages: int = 25):
         from gdo.chatgpt.module_chatgpt import module_chatgpt
         lookback = module_chatgpt.instance().cfg_lookback()

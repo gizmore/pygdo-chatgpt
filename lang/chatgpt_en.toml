@@ -10,3 +10,10 @@ md_chatgpt_chappy = "Manage ChatGPT settings for a context scope in private or i
 msg_chappy_enabled = "ChatGPT engine enabled with model %s."
 msg_chappy_disabled = "ChatGPT engine disabled."
 err_chappy_not_enabled = 'ChatGPT is not enabled here.'
+
+############
+# chapname #
+############
+mt_chatgpt_chappy_name = "Change AI Name"
+md_chatgpt_chappy_name = "Change the name for your chatgpt ai. You can then trigger it with the given name."
+msg_chappy_name_changed = "The name of your Chappy changed to %s."

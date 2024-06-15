@@ -14,14 +14,14 @@ class ChappyEventListener(Method):
     def gdo_trigger(self) -> str:
         return ''
 
-    def gdo_method_config_server(self) -> [GDT]:
-        return [
-            GDT_String('chappy_trigger').initial('Chappy'),
-        ]
+    # def gdo_method_config_server(self) -> [GDT]:
+    #     return [
+    #         GDT_String('chappy_trigger').initial('Chappy'),
+    #     ]
 
     def gdo_method_config_channel(self) -> [GDT]:
         return [
-            GDT_String('chappy_trigger').initial('Chappy'),
+            # GDT_String('chappy_trigger').initial('Chappy'),
             GDT_ChatTemperature('chappy_temperature'),
         ]
 
@@ -30,11 +30,7 @@ class ChappyEventListener(Method):
 
     def on_new_message(self, genome: GDO_ChatGenome, message: Message):
         from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
-        if message._env_channel:
-            trigger = self.get_config_channel_val('chappy_trigger')
-        else:
-            trigger = self.get_config_server_val('chappy_trigger')
-
+        trigger = genome.get_chappy().get_displayname()
         triggered = message._message.startswith(f"{trigger}:")
 
         GDO_ChatMessage.blank({
@@ -53,12 +49,14 @@ class ChappyEventListener(Method):
 
     def on_message_sent(self, genome: GDO_ChatGenome, message: Message, chappy: GDO_User):
         from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
+        prompt = GDO_ChatMessage.current_prompt(genome)
         GDO_ChatMessage.blank({
             'gcm_genome': genome.get_id(),
             'gcm_user': message._sender.get_id() if message._sender else message._env_user.get_id(),
             'gcm_text': self.get_db_text(message),
             'gcm_response': '1' if message._sender == chappy else '0',
-            'gcm_state': 'answered' if message._sender == chappy else 'created'
+            'gcm_state': 'answered' if message._sender == chappy else 'created',
+            'gcm_prompt_message': prompt.get_id() if prompt else None,
         }).insert()
 
     def get_db_text(self, message: Message) -> str:
