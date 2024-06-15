@@ -85,7 +85,7 @@ class TrainingThread(threading.Thread):
         # GDO_ChatMessage.change_state(prompt, msgs, 'answered')
         result = response.choices[0].message.content
         message._result = f"{result} #{prompt.get_id()}"
-        message._sender = mod.cfg_chappy()
+        message._sender = self._genome.get_chappy()
         # print(message._sender)
         asyncio.run(message.deliver())
         GDO_ChatMessage.change_state(prompt, msgs, 'answered')
@@ -141,8 +141,7 @@ class TrainingThread(threading.Thread):
         return Parser(Mode.TXT, user, server, channel, session)
 
     def get_chappy(self) -> GDO_User:
-        from gdo.chatgpt.module_chatgpt import module_chatgpt
-        return module_chatgpt.instance().cfg_chappy()
+        return self._genome.get_chappy()
 
     def evolve(self):
         from gdo.chatgpt.module_chatgpt import module_chatgpt

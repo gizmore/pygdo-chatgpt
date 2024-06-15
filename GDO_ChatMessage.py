@@ -36,6 +36,9 @@ class GDO_ChatMessage(GDO):
     def get_genome(self) -> GDO_ChatGenome:
         return self.gdo_value('gcm_genome')
 
+    def get_chappy(self) -> GDO_User:
+        return self.get_genome().get_chappy()
+
     def get_created(self):
         return self.gdo_val('gcm_created')
 
@@ -47,11 +50,6 @@ class GDO_ChatMessage(GDO):
 
     def is_chappy_response(self) -> bool:
         return self.gdo_value('gcm_response')
-
-    @classmethod
-    def get_chappy(cls):
-        from gdo.chatgpt.module_chatgpt import module_chatgpt
-        return module_chatgpt.instance().cfg_chappy()
 
     @classmethod
     def get_trigger(cls, genome: GDO_ChatGenome):
@@ -91,7 +89,7 @@ class GDO_ChatMessage(GDO):
         back = []
         if with_prompt:
             back.append({"role": "system", "content": genome.get_full_genome()})
-        chappy = module_chatgpt.instance().cfg_chappy()
+        chappy = genome.get_chappy()
         for message in messages:
             back.append({
                 "role": message.get_role(),
@@ -106,7 +104,7 @@ class GDO_ChatMessage(GDO):
     def get_role(self) -> str:
         from gdo.chatgpt.module_chatgpt import module_chatgpt
         user = self.get_user()
-        if user == module_chatgpt.instance().cfg_chappy():
+        if user == self.get_chappy():
             return 'assistant'
         return 'user'
 

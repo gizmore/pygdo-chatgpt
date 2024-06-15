@@ -109,3 +109,12 @@ class GDO_ChatGenome(GDO):
     def evolve(self, model_name: str):
         self.save_val('cg_model_name', model_name)
         pass
+
+    def get_chappy(self):
+        from gdo.chatgpt.module_chatgpt import module_chatgpt
+        if channel := self.get_channel():
+            return module_chatgpt.instance().cfg_chappy(channel=channel)
+        elif user := self.get_user():
+            return module_chatgpt.instance().cfg_chappy(user=user)
+        else:
+            return module_chatgpt.instance().cfg_chappy()
