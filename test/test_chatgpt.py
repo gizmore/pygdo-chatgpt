@@ -101,12 +101,11 @@ class ChatTest(unittest.TestCase):
         server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :Chappy: Please play a round of blackjack.')
         self.assertTrue(True, 'blah')
 
-    def test_05_irc_mass(self):
-        genome = GDO_ChatGenome.get_for_channel(GDO_Channel.table().get_by_id('1'))
-        prompts = [
-            'Chappy: This is test message 1/10... and i don\'t really read the response.',
-        ]
-        for prompt in prompts:
+    # def test_05_irc_mass(self):
+    #     genome = GDO_ChatGenome.get_for_channel(GDO_Channel.table().get_by_id('1'))
+    #     prompts = [
+    #         'Chappy: This is test message 1/10... and i don\'t really read the response.',
+    #     ]
 
 
     def test_06_evolve(self):
