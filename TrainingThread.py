@@ -116,7 +116,7 @@ class TrainingThread(threading.Thread):
         message.env_user(self.get_chappy())
         message._sender = GDO_User.system()
         message._env_session = GDO_Session.for_user(self.get_chappy())
-        message._env_reply_to = 'Chappy'
+        message._env_reply_to = 'chappy'
         parser = self.get_chappy_parser(message)
         command = Strings.substr_from(message._message, message._sender.get_server().get_trigger())
         method = parser.parse(command)

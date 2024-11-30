@@ -16,4 +16,4 @@ err_chappy_not_enabled = 'ChatGPT is not enabled here.'
 ############
 mt_chatgpt_chappy_name = "Change AI Name"
 md_chatgpt_chappy_name = "Change the name for your chatgpt ai. You can then trigger it with the given name."
-msg_chappy_name_changed = "The name of your Chappy changed to %s."
+msg_chappy_name_changed = "The name of your chappy changed to %s."

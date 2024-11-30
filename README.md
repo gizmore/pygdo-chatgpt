@@ -25,7 +25,7 @@ challenge_genome = ".... secret genome for a hacking challenge...."
 
 - chatgpt_api_key
 - chatgpt_chappy (GDO_User for chatgpt itself)
-- chatgpt_lookback (Duration of lookback for assigning messages to Chappy: prompts
+- chatgpt_lookback (Duration of lookback for assigning messages to chappy: prompts
 
 
 ### User Settings

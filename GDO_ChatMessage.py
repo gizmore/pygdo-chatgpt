@@ -22,7 +22,7 @@ class GDO_ChatMessage(GDO):
             GDT_AutoInc('gcm_id'),
             GDT_Object('gcm_genome').table(GDO_ChatGenome.table()).not_null().cascade_delete(),
             GDT_Object('gcm_prompt_message').table(self.table()).cascade_delete(),
-            GDT_User('gcm_user').cascade_delete(),  # 1=system, 2=Chappy (in a normal setup)
+            GDT_User('gcm_user').cascade_delete(),  # 1=system, 2=chappy (in a normal setup)
             GDT_Text('gcm_text').not_null(),
             GDT_Bool('gcm_prompt').not_null().initial('0'),
             GDT_Bool('gcm_response').not_null().initial('0'),

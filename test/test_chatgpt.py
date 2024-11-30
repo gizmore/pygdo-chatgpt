@@ -60,7 +60,7 @@ class ChatTest(unittest.TestCase):
             'gcm_genome': genome.get_id(),
             'gcm_user': cli_gizmore().get_id(),
             'gcm_prompt': '1',
-            'gcm_text': 'Chappy: Can\'t we just omit the real data bit then, and just use 5 bits to encode one instead of 6?',
+            'gcm_text': 'chappy: Can\'t we just omit the real data bit then, and just use 5 bits to encode one instead of 6?',
         }).insert()
         thread.chatgpt_request()
         count = GDO_ChatMessage.table().count_where()
@@ -74,7 +74,7 @@ class ChatTest(unittest.TestCase):
             'gcm_genome': genome.get_id(),
             'gcm_user': cli_gizmore().get_id(),
             'gcm_prompt': '1',
-            'gcm_text': 'Chappy: You are in a unit tests to let you play a round of blackjack.'
+            'gcm_text': 'chappy: You are in a unit tests to let you play a round of blackjack.'
                         'You need to play one full round.'
                         'Try to play as good as you can. The game is blackjack.'
                         'When you are done with the round => $ack.',
@@ -86,7 +86,7 @@ class ChatTest(unittest.TestCase):
             count2 = count
             thread.running()
             count = GDO_ChatMessage.table().count_where()
-        self.assertGreaterEqual(count, 5, 'Chappy does not play blackjack long enough.')
+        self.assertGreaterEqual(count, 5, 'chappy does not play blackjack long enough.')
 
     def test_04_irc(self):
         try:
@@ -98,13 +98,13 @@ class ChatTest(unittest.TestCase):
         })
         self.assertIsNotNone(server, 'test irc server missing')
         server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :$chappy --model blackjack on')
-        server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :Chappy: Please play a round of blackjack.')
+        server.get_connector().process_message(':gizmore!~kvirc@p549970e0.dip0.t-ipconnect.de PRIVMSG #dog :chappy: Please play a round of blackjack.')
         self.assertTrue(True, 'blah')
 
     # def test_05_irc_mass(self):
     #     genome = GDO_ChatGenome.get_for_channel(GDO_Channel.table().get_by_id('1'))
     #     prompts = [
-    #         'Chappy: This is test message 1/10... and i don\'t really read the response.',
+    #         'chappy: This is test message 1/10... and i don\'t really read the response.',
     #     ]
 
 
@@ -120,16 +120,16 @@ class ChatTest(unittest.TestCase):
     #     genome = GDO_ChatGenome.get_for_user(cli_gizmore())
     #     thread = TrainingThread(genome)
     #     prompts = [
-    #         'Chappy: how are you?',
-    #         'Chappy: This is a test. I need 10 such tests to trigger an automated fine-training for you.',
-    #         'Chappy: This is test message 3.',
-    #         'Chappy: Do you still like this testing?',
-    #         'Chappy: Test 5 - What is 4+1?',
-    #         'Chappy: Test 6 - What is your purpose?',
-    #         'Chappy: Test 7/10 - I am working on an implementation of you with the same rights as a normal user. You will be able to operate a bot as an interface.',
-    #         'Chappy: how are you?',
-    #         'Chappy: how are you?',
-    #         'Chappy: how are you?',
+    #         'chappy: how are you?',
+    #         'chappy: This is a test. I need 10 such tests to trigger an automated fine-training for you.',
+    #         'chappy: This is test message 3.',
+    #         'chappy: Do you still like this testing?',
+    #         'chappy: Test 5 - What is 4+1?',
+    #         'chappy: Test 6 - What is your purpose?',
+    #         'chappy: Test 7/10 - I am working on an implementation of you with the same rights as a normal user. You will be able to operate a bot as an interface.',
+    #         'chappy: how are you?',
+    #         'chappy: how are you?',
+    #         'chappy: how are you?',
     #     ]
     #     for prompt in prompts:
     #         GDO_ChatMessage.blank({

@@ -68,7 +68,7 @@ class ChappyEventListener(Method):
     def is_chappy(self, message: Message):
         from gdo.chatgpt.module_chatgpt import module_chatgpt
         chappy = module_chatgpt.instance().cfg_chappy_for_message(message)
-        return message._env_reply_to == 'Chappy' or message._sender == chappy
+        return message._env_reply_to.lower() == 'chappy' or message._sender == chappy
 
     def get_db_text2(self, message: Message) -> str:
         if self.is_chappy(message):

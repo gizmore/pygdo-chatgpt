@@ -41,24 +41,29 @@ class module_chatgpt(GDO_Module):
             GDT_Secret('chatgpt_api_key').initial(apikey),
             GDT_User('chatgpt_chappy'),
             GDT_Duration('chatgpt_lookback').initial('666'),
+            GDT_Bool('chatgpt_agi_mode').initial('1'),
         ]
 
     def cfg_api_key(self) -> str:
         return self.get_config_val('chatgpt_api_key')
 
+    def cfg_agi_mode(self) -> bool:
+        return self.get_config_value('chatgpt_agi_mode')
+
     def cfg_chappy(self, user: GDO_User = None, channel: GDO_Channel = None) -> GDO_User:
         """
         Get the chappy user for a user (private chat) or channel.
         Every chappy scope needs a real user, as it is self-aware with own stats.
-        Fallback to Chappy{1}
+        Fallback to chappy{1}
         """
-        if user is not None:
-            return self.get_or_create_user_chappy(user)
-        if channel is not None:
-            return self.get_or_create_channel_chappy(channel)
+        if not self.cfg_agi_mode():
+            if user is not None:
+                return self.get_or_create_user_chappy(user)
+            if channel is not None:
+                return self.get_or_create_channel_chappy(channel)
         return self.get_config_value('chatgpt_chappy')
 
-    def cfg_chappy_for_message(self, message):
+    def cfg_chappy_for_message(self, message: Message):
         if message._env_channel:
             return self.cfg_chappy(channel=message._env_channel)
         elif message._env_user.is_type('device'):
@@ -78,14 +83,14 @@ class module_chatgpt(GDO_Module):
             chappy = GDO_User.blank({
                 'user_type': 'device',
                 'user_name': name,
-                'user_displayname': 'Chappy',
+                'user_displayname': 'chappy',
                 'user_server': bash_id,
                 'user_link': user.get_id(),
             }).insert()
         return chappy
 
     def get_or_create_channel_chappy(self, channel: GDO_Channel) -> GDO_User:
-        name = f"Chappy{channel.get_id()}"
+        name = f"chappy{channel.get_id()}"
         bash_id = Bash.get_server().get_id()
         chappy = GDO_User.table().get_by_vals({
             'user_name': name,
@@ -95,7 +100,7 @@ class module_chatgpt(GDO_Module):
             chappy = GDO_User.blank({
                 'user_type': 'member',
                 'user_name': name,
-                'user_displayname': 'Chappy',
+                'user_displayname': 'chappy',
                 'user_server': bash_id,
             }).insert()
         return chappy
@@ -130,7 +135,7 @@ class module_chatgpt(GDO_Module):
         ]
 
     def gdo_install(self):
-        chappy = Bash.get_server().get_or_create_user('Chappy')
+        chappy = Bash.get_server().get_or_create_user('chappy')
         self.save_config_val('chatgpt_chappy', chappy.get_id())
         Files.create_dir(Application.file_path('files/chatgpt/'))
 
@@ -152,7 +157,7 @@ class module_chatgpt(GDO_Module):
         if not message._env_user.get_setting_value('chappy_no'):
             genome = GDO_ChatGenome.for_message(message)
             if genome:
-                if message._result.startswith('Chappy:'):
+                if message._result.lower().startswith('chappy:'):
                     message._message = message._result
                     ChappyEventListener().env_copy(message).on_new_message(genome, message)
                 else:
