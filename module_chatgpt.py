@@ -15,7 +15,9 @@ from gdo.chatgpt.GDO_ChatMessage import GDO_ChatMessage
 from gdo.chatgpt.GDT_ChatTemperature import GDT_ChatTemperature
 from gdo.chatgpt.method.ChappyEventListener import ChappyEventListener
 from gdo.core.GDO_Channel import GDO_Channel
+from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_User import GDT_User
@@ -28,6 +30,9 @@ class module_chatgpt(GDO_Module):
     ##########
     # Config #
     ##########
+    PERM_CHAPPY_BOT = 'chappy_bot'
+    PERM_CHAPPY_USER = 'chappy_user'
+
     def gdo_module_config(self) -> list[GDT]:
         apikey = ''
         try:
@@ -135,9 +140,12 @@ class module_chatgpt(GDO_Module):
         ]
 
     def gdo_install(self):
+        Files.create_dir(Application.file_path(Application.config('file.directory') + 'chatgpt/'))
         chappy = Bash.get_server().get_or_create_user('chappy')
         self.save_config_val('chatgpt_chappy', chappy.get_id())
-        Files.create_dir(Application.file_path('files/chatgpt/'))
+        GDO_Permission.get_or_create(self.PERM_CHAPPY_BOT)
+        GDO_Permission.get_or_create(self.PERM_CHAPPY_USER)
+        GDO_UserPermission.grant(chappy, self.PERM_CHAPPY_BOT)
 
     def gdo_init(self):
         Application.EVENTS.subscribe('new_message', self.on_new_message)
