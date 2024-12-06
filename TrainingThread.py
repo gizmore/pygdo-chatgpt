@@ -121,7 +121,7 @@ class TrainingThread(threading.Thread):
         command = Strings.substr_from(message._message, message._sender.get_server().get_trigger())
         method = parser.parse(command)
         gdt = method.execute()
-        txt = GDT_Page.instance()._top_bar.render_txt()
+        txt = Application.get_page()._top_bar.render_txt()
         txt += " "
         txt += gdt.render_txt()
         message._result = txt.strip()
