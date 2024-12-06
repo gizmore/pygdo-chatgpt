@@ -60,7 +60,6 @@ class ChappyEventListener(Method):
         }).insert()
 
     def get_db_text(self, message: Message) -> str:
-        res = message._result_raw
         if self.is_chappy(message):
             return Strings.rsubstr_to(res, ' #', res)
         return res
